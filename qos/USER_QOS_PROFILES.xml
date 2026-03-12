@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dds xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:noNamespaceSchemaLocation="http://community.rti.com/schema/current/rti_dds_qos_profiles.xsd">
+    <qos_library name="DroneSwarmLibrary">
+
+        <qos_profile name="TelemetryProfile">
+            <datawriter_qos>
+                <reliability><kind>BEST_EFFORT_RELIABILITY_QOS</kind></reliability>
+                <history><kind>KEEP_LAST_HISTORY_QOS</kind><depth>1</depth></history>
+                <deadline><period><sec>0</sec><nanosec>200000000</nanosec></period></deadline>
+                <liveliness><kind>AUTOMATIC_LIVELINESS_QOS</kind><lease_duration><sec>2</sec><nanosec>0</nanosec></lease_duration></liveliness>
+                <ownership><kind>EXCLUSIVE_OWNERSHIP_QOS</kind></ownership>
+                <ownership_strength><value>100</value></ownership_strength>
+            </datawriter_qos>
+            <datareader_qos>
+                <reliability><kind>BEST_EFFORT_RELIABILITY_QOS</kind></reliability>
+                <history><kind>KEEP_LAST_HISTORY_QOS</kind><depth>1</depth></history>
+                <deadline><period><sec>0</sec><nanosec>200000000</nanosec></period></deadline>
+                <liveliness><kind>AUTOMATIC_LIVELINESS_QOS</kind><lease_duration><sec>2</sec><nanosec>0</nanosec></lease_duration></liveliness>
+            </datareader_qos>
+        </qos_profile>
+
+        <qos_profile name="CommandProfile">
+            <datawriter_qos>
+                <reliability><kind>RELIABLE_RELIABILITY_QOS</kind><max_blocking_time><sec>1</sec><nanosec>0</nanosec></max_blocking_time></reliability>
+                <history><kind>KEEP_ALL_HISTORY_QOS</kind></history>
+                <durability><kind>TRANSIENT_LOCAL_DURABILITY_QOS</kind></durability>
+            </datawriter_qos>
+            <datareader_qos>
+                <reliability><kind>RELIABLE_RELIABILITY_QOS</kind></reliability>
+                <history><kind>KEEP_ALL_HISTORY_QOS</kind></history>
+                <durability><kind>TRANSIENT_LOCAL_DURABILITY_QOS</kind></durability>
+            </datareader_qos>
+        </qos_profile>
+
+        <qos_profile name="AlertProfile">
+            <datawriter_qos>
+                <reliability><kind>RELIABLE_RELIABILITY_QOS</kind></reliability>
+                <history><kind>KEEP_LAST_HISTORY_QOS</kind><depth>32</depth></history>
+                <durability><kind>TRANSIENT_LOCAL_DURABILITY_QOS</kind></durability>
+                <lifespan><duration><sec>300</sec><nanosec>0</nanosec></duration></lifespan>
+            </datawriter_qos>
+            <datareader_qos>
+                <reliability><kind>RELIABLE_RELIABILITY_QOS</kind></reliability>
+                <history><kind>KEEP_LAST_HISTORY_QOS</kind><depth>128</depth></history>
+                <durability><kind>TRANSIENT_LOCAL_DURABILITY_QOS</kind></durability>
+            </datareader_qos>
+        </qos_profile>
+
+        <qos_profile name="MissionProfile">
+            <datawriter_qos>
+                <reliability><kind>RELIABLE_RELIABILITY_QOS</kind></reliability>
+                <durability><kind>TRANSIENT_LOCAL_DURABILITY_QOS</kind></durability>
+                <history><kind>KEEP_LAST_HISTORY_QOS</kind><depth>1</depth></history>
+            </datawriter_qos>
+            <datareader_qos>
+                <reliability><kind>RELIABLE_RELIABILITY_QOS</kind></reliability>
+                <durability><kind>TRANSIENT_LOCAL_DURABILITY_QOS</kind></durability>
+                <history><kind>KEEP_LAST_HISTORY_QOS</kind><depth>1</depth></history>
+            </datareader_qos>
+        </qos_profile>
+
+        <qos_profile name="SwarmSummaryProfile">
+            <datawriter_qos>
+                <reliability><kind>RELIABLE_RELIABILITY_QOS</kind></reliability>
+                <history><kind>KEEP_LAST_HISTORY_QOS</kind><depth>1</depth></history>
+                <durability><kind>TRANSIENT_LOCAL_DURABILITY_QOS</kind></durability>
+            </datawriter_qos>
+            <datareader_qos>
+                <reliability><kind>RELIABLE_RELIABILITY_QOS</kind></reliability>
+                <history><kind>KEEP_LAST_HISTORY_QOS</kind><depth>1</depth></history>
+                <durability><kind>TRANSIENT_LOCAL_DURABILITY_QOS</kind></durability>
+            </datareader_qos>
+        </qos_profile>
+
+    </qos_library>
+</dds>

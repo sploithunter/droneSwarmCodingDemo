@@ -1,0 +1,445 @@
+:root {
+  --bg-primary: #1A1A2E;
+  --bg-card: #16213E;
+  --text-primary: #E0E0E0;
+  --text-secondary: #A0A0A0;
+  --accent: #4FC3F7;
+  --success: #66BB6A;
+  --warning: #FFA726;
+  --danger: #EF5350;
+  --chart-1: #4FC3F7;
+  --chart-2: #FFA726;
+  --chart-3: #66BB6A;
+  --chart-4: #CE93D8;
+}
+
+[data-theme="light"] {
+  --bg-primary: #FFFFFF;
+  --bg-card: #F5F5F5;
+  --text-primary: #333333;
+  --text-secondary: #666666;
+  --accent: #2196F3;
+  --success: #4CAF50;
+  --warning: #FF9800;
+  --danger: #F44336;
+  --chart-1: #2196F3;
+  --chart-2: #FF9800;
+  --chart-3: #4CAF50;
+  --chart-4: #9C27B0;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+.app {
+  min-height: 100vh;
+}
+
+/* Layout */
+.dashboard {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 24px;
+  background: var(--bg-card);
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.header-title {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.connection-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+}
+
+.status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.status-dot.connected { background: var(--success); }
+.status-dot.disconnected { background: var(--danger); }
+
+.theme-toggle {
+  background: none;
+  border: 1px solid var(--text-secondary);
+  border-radius: 6px;
+  padding: 4px 8px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+/* Main layout */
+.main-layout {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  flex: 1;
+  min-height: 450px;
+}
+
+.main-layout .left-panel {
+  position: relative;
+}
+
+.main-layout .right-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background: var(--bg-card);
+  border-left: 1px solid rgba(255,255,255,0.1);
+  overflow-y: auto;
+  max-height: 450px;
+}
+
+/* Map */
+.map-panel {
+  position: relative;
+  height: 100%;
+}
+
+.map-container {
+  height: 100%;
+  min-height: 400px;
+}
+
+.map-controls {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 1000;
+  display: flex;
+  gap: 4px;
+}
+
+.map-controls button {
+  padding: 4px 10px;
+  border: 1px solid var(--text-secondary);
+  border-radius: 4px;
+  background: var(--bg-card);
+  color: var(--text-primary);
+  cursor: pointer;
+  font-size: 0.75rem;
+}
+
+.map-controls button.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+/* Swarm overview */
+.swarm-overview {
+  padding: 16px;
+}
+
+.swarm-overview h2 {
+  font-size: 1rem;
+  margin-bottom: 12px;
+  color: var(--accent);
+}
+
+.status-cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.status-card {
+  background: var(--bg-primary);
+  border-radius: 8px;
+  padding: 8px;
+  text-align: center;
+}
+
+.card-value {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.card-label {
+  display: block;
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+}
+
+.battery-overview {
+  margin-bottom: 8px;
+  font-size: 0.85rem;
+}
+
+.battery-bar {
+  height: 6px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 3px;
+  margin-top: 4px;
+}
+
+.battery-fill {
+  height: 100%;
+  background: var(--success);
+  border-radius: 3px;
+  transition: width 0.3s;
+}
+
+.mission-stats {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+/* Alert feed */
+.alert-feed {
+  padding: 16px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.alert-feed h2 {
+  font-size: 1rem;
+  margin-bottom: 8px;
+  color: var(--accent);
+}
+
+.alert-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.alert-item {
+  padding: 6px 8px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  background: var(--bg-primary);
+}
+
+.alert-item.critical {
+  border-left: 3px solid var(--danger);
+  animation: pulse-bg 2s infinite;
+}
+
+.alert-item.warning {
+  border-left: 3px solid var(--warning);
+}
+
+.alert-item.info {
+  border-left: 3px solid var(--accent);
+}
+
+.alert-icon { font-size: 0.9rem; }
+.alert-callsign { font-weight: 600; min-width: 70px; }
+.alert-message { color: var(--text-secondary); }
+
+/* Drone selector */
+.drone-selector {
+  display: flex;
+  gap: 4px;
+  padding: 8px 24px;
+  background: var(--bg-card);
+  border-top: 1px solid rgba(255,255,255,0.1);
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  overflow-x: auto;
+}
+
+.drone-tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border: 2px solid;
+  border-radius: 6px;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  cursor: pointer;
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+.drone-tab.selected {
+  background: var(--bg-card);
+  box-shadow: 0 0 8px rgba(79,195,247,0.3);
+}
+
+.tab-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.tab-id {
+  font-weight: 700;
+}
+
+/* Detail layout */
+.detail-layout {
+  display: grid;
+  grid-template-columns: 1fr 350px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+/* Telemetry panel */
+.telemetry-panel {
+  padding: 16px 24px;
+}
+
+.telemetry-panel h2 {
+  font-size: 1rem;
+  margin-bottom: 12px;
+  color: var(--accent);
+}
+
+.chart-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 12px;
+}
+
+.chart-container {
+  background: var(--bg-card);
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.chart-container h3 {
+  font-size: 0.85rem;
+  margin-bottom: 8px;
+  color: var(--text-secondary);
+}
+
+/* Command panel */
+.command-panel {
+  padding: 16px;
+  background: var(--bg-card);
+  border-left: 1px solid rgba(255,255,255,0.1);
+}
+
+.command-panel h2 {
+  font-size: 1rem;
+  margin-bottom: 12px;
+  color: var(--accent);
+}
+
+.command-panel h3 {
+  font-size: 0.85rem;
+  margin: 12px 0 8px;
+  color: var(--text-secondary);
+}
+
+.broadcast-toggle {
+  margin-bottom: 12px;
+  font-size: 0.85rem;
+}
+
+.broadcast-toggle label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.quick-commands {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.quick-commands button,
+.param-commands button,
+.waypoint-command button {
+  padding: 8px 12px;
+  border: 1px solid var(--accent);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--accent);
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: background 0.2s;
+}
+
+.quick-commands button:hover,
+.param-commands button:hover,
+.waypoint-command button:hover {
+  background: var(--accent);
+  color: #fff;
+}
+
+.param-commands {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.param-row {
+  display: flex;
+  gap: 6px;
+}
+
+.param-row input,
+.waypoint-command input {
+  flex: 1;
+  padding: 6px 8px;
+  border: 1px solid var(--text-secondary);
+  border-radius: 4px;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: 0.8rem;
+}
+
+.waypoint-command {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* Animations */
+@keyframes pulse-bg {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* Leaflet overrides */
+.base-station-marker,
+.drone-marker {
+  background: none !important;
+  border: none !important;
+}

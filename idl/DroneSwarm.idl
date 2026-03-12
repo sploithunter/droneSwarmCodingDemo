@@ -1,0 +1,158 @@
+// ---- Enumerations ----
+
+enum DroneMode {
+    IDLE,
+    TAKEOFF,
+    EN_ROUTE,
+    HOVERING,
+    RETURNING_TO_BASE,
+    LANDING,
+    LANDED,
+    FAULT
+};
+
+enum AlertSeverity {
+    INFO,
+    WARNING,
+    CRITICAL
+};
+
+enum AlertType {
+    LOW_BATTERY,
+    GEOFENCE_BREACH,
+    COLLISION_WARNING,
+    MOTOR_FAULT,
+    GPS_DEGRADED,
+    COMMUNICATION_TIMEOUT,
+    MISSION_COMPLETE
+};
+
+enum CommandType {
+    GOTO_WAYPOINT,
+    RETURN_TO_BASE,
+    HOVER,
+    RESUME_MISSION,
+    EMERGENCY_LAND,
+    SET_SPEED,
+    SET_ALTITUDE
+};
+
+// ---- Coordinate Types ----
+
+struct GeoPoint {
+    double latitude;   // degrees, WGS84
+    double longitude;  // degrees, WGS84
+    float altitude_m;  // meters above ground level (AGL)
+};
+
+struct Vector3 {
+    float x;  // m/s or m/s^2 depending on context
+    float y;
+    float z;
+};
+
+// ---- Primary Data Types ----
+
+@topic
+struct DroneState {
+    @key
+    uint8 drone_id;               // 0-7
+
+    // Timestamp
+    int64 timestamp_ns;            // nanoseconds since epoch
+
+    // Position & motion
+    GeoPoint position;
+    float heading_deg;             // 0-360 compass heading
+    Vector3 velocity;              // NED frame, m/s
+    float ground_speed_mps;        // derived, m/s
+
+    // Status
+    DroneMode mode;
+    float battery_pct;             // 0.0 - 100.0
+    float battery_voltage;         // volts
+    float signal_strength_dbm;     // RSSI
+
+    // Mission progress
+    uint16 current_waypoint_idx;
+    uint16 total_waypoints;
+    float mission_progress_pct;    // 0.0 - 100.0
+
+    // Health indicators
+    float motor_rpm[4];            // quadcopter, 4 motors
+    float internal_temp_c;         // degrees celsius
+    uint8 gps_satellite_count;
+    float gps_hdop;                // horizontal dilution of precision
+};
+
+@topic
+struct DroneCommand {
+    @key
+    uint8 drone_id;                // 0-7, or 255 for broadcast to all
+
+    int64 timestamp_ns;
+    CommandType command;
+
+    // Payload (interpreted based on command type)
+    GeoPoint target_position;      // for GOTO_WAYPOINT
+    float parameter;               // speed for SET_SPEED, altitude for SET_ALTITUDE
+
+    uint32 command_seq;            // monotonic sequence number for ack tracking
+    string<128> issuer;            // "dashboard", "mission_planner", etc.
+};
+
+@topic
+struct DroneAlert {
+    @key
+    uint8 drone_id;
+    @key
+    uint32 alert_seq;              // unique per drone
+
+    int64 timestamp_ns;
+    AlertType alert_type;
+    AlertSeverity severity;
+    string<256> message;
+
+    // Context
+    GeoPoint position;
+    float battery_pct;
+    DroneMode drone_mode;
+
+    boolean acknowledged;
+};
+
+@topic
+struct MissionPlan {
+    @key
+    uint8 drone_id;
+
+    int64 timestamp_ns;
+    uint16 waypoint_count;
+    sequence<GeoPoint, 64> waypoints;
+    float cruise_speed_mps;        // default cruise speed
+    float cruise_altitude_m;       // default altitude
+
+    boolean is_active;
+    string<128> mission_name;
+};
+
+@topic
+struct SwarmSummary {
+    @key
+    uint8 summary_id;              // always 0, singleton topic
+
+    int64 timestamp_ns;
+    uint8 total_drones;
+    uint8 active_drones;
+    uint8 faulted_drones;
+    uint8 returning_drones;
+    uint8 idle_drones;
+
+    float avg_battery_pct;
+    float min_battery_pct;
+    uint8 min_battery_drone_id;
+
+    float total_distance_covered_m;
+    uint16 active_alerts;
+    uint16 missions_completed;
+};
