@@ -130,7 +130,7 @@ class TestSpec12MotorRpm:
 
     def test_motor_rpm_is_list(self):
         s = DroneState()
-        assert isinstance(s.motor_rpm, list)
+        assert hasattr(s.motor_rpm, '__len__')  # list or DDS Sequence
 
     def test_motor_rpm_length(self):
         s = DroneState()

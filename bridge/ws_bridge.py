@@ -9,34 +9,52 @@ from drones.types import (
 )
 
 
+class _DDSEncoder(json.JSONEncoder):
+    """JSON encoder that handles DDS sequence types (Float64Seq, etc.)."""
+    def default(self, o):
+        # DDS sequences are iterable but not JSON-serializable
+        if hasattr(o, '__iter__') and not isinstance(o, (str, bytes, dict)):
+            return list(o)
+        return super().default(o)
+
+
+def _to_json_dict(d):
+    """Recursively convert DDS sequence types to plain lists for JSON."""
+    if isinstance(d, dict):
+        return {k: _to_json_dict(v) for k, v in d.items()}
+    if isinstance(d, (list, tuple)):
+        return [_to_json_dict(i) for i in d]
+    if hasattr(d, '__iter__') and not isinstance(d, (str, bytes)):
+        return [_to_json_dict(i) for i in d]
+    return d
+
+
 def serialize_state(state):
     """Serialize a DroneState to a JSON-compatible dict."""
     if isinstance(state, dict):
-        return state
-    d = asdict(state)
-    return d
+        return _to_json_dict(state)
+    return _to_json_dict(asdict(state))
 
 
 def serialize_alert(alert):
     """Serialize a DroneAlert to a JSON-compatible dict."""
     if isinstance(alert, dict):
-        return alert
-    return asdict(alert)
+        return _to_json_dict(alert)
+    return _to_json_dict(asdict(alert))
 
 
 def serialize_mission(mission):
     """Serialize a MissionPlan to a JSON-compatible dict."""
     if isinstance(mission, dict):
-        return mission
-    d = asdict(mission)
-    return d
+        return _to_json_dict(mission)
+    return _to_json_dict(asdict(mission))
 
 
 def serialize_summary(summary):
     """Serialize a SwarmSummary to a JSON-compatible dict."""
     if isinstance(summary, dict):
-        return summary
-    return asdict(summary)
+        return _to_json_dict(summary)
+    return _to_json_dict(asdict(summary))
 
 
 def deserialize_command(data):

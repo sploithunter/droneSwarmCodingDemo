@@ -146,7 +146,7 @@ class TestEnumValues:
 class TestMotorRpm:
     def test_motor_rpm_default_length(self):
         s = DroneState()
-        assert isinstance(s.motor_rpm, list)
+        assert hasattr(s.motor_rpm, '__len__')  # list or DDS Sequence
         assert len(s.motor_rpm) == 4
 
     def test_motor_rpm_values_are_zero(self):

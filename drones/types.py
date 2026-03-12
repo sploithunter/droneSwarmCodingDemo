@@ -4,10 +4,9 @@ Implements all IDL-defined types as Python dataclasses with optional
 RTI Connext DDS type support via rti.types.
 """
 
-from __future__ import annotations
-
 from dataclasses import dataclass, field
 from enum import IntEnum
+from typing import Sequence
 
 # Attempt to import RTI Connext type decorators; fall back to plain dataclass.
 try:
@@ -15,6 +14,19 @@ try:
     _has_rti = True
 except ImportError:
     _has_rti = False
+
+
+def _dds_type(cls=None, *, member_annotations=None):
+    """Decorator: @idl.struct when RTI available, @dataclass otherwise."""
+    def wrap(c):
+        if _has_rti:
+            if member_annotations:
+                return idl.struct(member_annotations=member_annotations)(c)
+            return idl.struct(c)
+        return dataclass(c)
+    if cls is not None:
+        return wrap(cls)
+    return wrap
 
 
 # ---------------------------------------------------------------------------
@@ -62,14 +74,14 @@ class CommandType(IntEnum):
 # Coordinate Types
 # ---------------------------------------------------------------------------
 
-@dataclass
+@_dds_type
 class GeoPoint:
     latitude: float = 0.0
     longitude: float = 0.0
     altitude_m: float = 0.0
 
 
-@dataclass
+@_dds_type
 class Vector3:
     x: float = 0.0
     y: float = 0.0
@@ -77,10 +89,28 @@ class Vector3:
 
 
 # ---------------------------------------------------------------------------
+# DDS member annotations (only constructed when RTI is available)
+# ---------------------------------------------------------------------------
+
+if _has_rti:
+    _STATE_ANN = {'drone_id': [idl.key]}
+    _CMD_ANN = {'drone_id': [idl.key], 'issuer': [idl.bound(128)]}
+    _ALERT_ANN = {'drone_id': [idl.key], 'message': [idl.bound(256)]}
+    _MISSION_ANN = {'drone_id': [idl.key], 'mission_name': [idl.bound(128)]}
+    _motor_rpm_factory = idl.array_factory(float, [4])
+else:
+    _STATE_ANN = None
+    _CMD_ANN = None
+    _ALERT_ANN = None
+    _MISSION_ANN = None
+    _motor_rpm_factory = lambda: [0.0] * 4
+
+
+# ---------------------------------------------------------------------------
 # Primary Data Types
 # ---------------------------------------------------------------------------
 
-@dataclass
+@_dds_type(member_annotations=_STATE_ANN)
 class DroneState:
     drone_id: int = 0
     timestamp_ns: int = 0
@@ -95,13 +125,13 @@ class DroneState:
     current_waypoint_idx: int = 0
     total_waypoints: int = 0
     mission_progress_pct: float = 0.0
-    motor_rpm: list = field(default_factory=lambda: [0.0] * 4)
+    motor_rpm: Sequence[float] = field(default_factory=_motor_rpm_factory)
     internal_temp_c: float = 0.0
     gps_satellite_count: int = 0
     gps_hdop: float = 0.0
 
 
-@dataclass
+@_dds_type(member_annotations=_CMD_ANN)
 class DroneCommand:
     drone_id: int = 0
     timestamp_ns: int = 0
@@ -112,7 +142,7 @@ class DroneCommand:
     issuer: str = ""
 
 
-@dataclass
+@_dds_type(member_annotations=_ALERT_ANN)
 class DroneAlert:
     drone_id: int = 0
     alert_seq: int = 0
@@ -126,19 +156,19 @@ class DroneAlert:
     acknowledged: bool = False
 
 
-@dataclass
+@_dds_type(member_annotations=_MISSION_ANN)
 class MissionPlan:
     drone_id: int = 0
     timestamp_ns: int = 0
     waypoint_count: int = 0
-    waypoints: list = field(default_factory=list)
+    waypoints: Sequence[GeoPoint] = field(default_factory=list)
     cruise_speed_mps: float = 0.0
     cruise_altitude_m: float = 0.0
     is_active: bool = False
     mission_name: str = ""
 
 
-@dataclass
+@_dds_type
 class SwarmSummary:
     summary_id: int = 0
     timestamp_ns: int = 0
